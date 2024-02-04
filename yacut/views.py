@@ -1,6 +1,6 @@
 from http import HTTPStatus
 
-from flask import render_template, url_for, redirect, abort, flash
+from flask import abort, flash, redirect, render_template, url_for
 
 from . import app, db
 from .forms import URLMapForm

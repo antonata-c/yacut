@@ -1,8 +1,4 @@
 import os
-from string import ascii_letters, digits
-
-SHORT_SIZE = 16  # хорошая ли идея хранить константы здесь?
-LETTERS_DIGITS = ascii_letters + digits
 
 
 class Config(object):

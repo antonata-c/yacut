@@ -1,31 +1,32 @@
-from random import choices
+import random
+import re
 
-from .error_handlers import InvalidAPIUsage
-from settings import SHORT_SIZE, LETTERS_DIGITS
-
+from .constants import (FIELD_REQUIRED, INCORRECT_SHORT_ID, LETTERS_DIGITS,
+                        NOT_UNIQUE_SHORT_ID, SHORT_ID_REGEX, SHORT_SIZE)
+from .error_handlers import InvalidAPIRequest
 from .models import URLMap
 
 
 def get_unique_short_id(size=6):
-    short = ''.join(choices(LETTERS_DIGITS, k=size))
-    while URLMap.query.filter_by(short=short).first():
-        short = ''.join(choices(LETTERS_DIGITS, k=size))
+    while True:
+        short = ''.join(random.choices(LETTERS_DIGITS, k=size))
+        if not URLMap.query.filter_by(short=short).first():
+            break
     return short
 
 
 # Стоит ли для этой функции добавить файл validators?
-# Хорошее ли решение вынести ее из вьюшки?
 def validate_post_data(data):
-    # required_fields = ('url',)
-    # error_fields = list(
-    #     filter(lambda field: field not in data, required_fields)
-    # )
-    if 'url' not in data:
-        raise InvalidAPIUsage(f'"url" является обязательным полем!')
+    required_fields = ('url',)
+    for field in required_fields:
+        if field not in data:
+            raise InvalidAPIRequest(FIELD_REQUIRED.format(field=field))
     short = data.get('custom_id')
     if len(short) > SHORT_SIZE:
-        raise InvalidAPIUsage('Указано недопустимое имя для короткой ссылки')
+        raise InvalidAPIRequest(INCORRECT_SHORT_ID)
+    if re.match(SHORT_ID_REGEX, short) is None:
+        raise InvalidAPIRequest(INCORRECT_SHORT_ID)
     if URLMap.query.filter_by(short=short).first():
-        raise InvalidAPIUsage(
-            'Предложенный вариант короткой ссылки уже существует.'
+        raise InvalidAPIRequest(
+            NOT_UNIQUE_SHORT_ID
         )
