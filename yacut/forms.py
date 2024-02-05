@@ -1,17 +1,36 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, URLField
-from wtforms.validators import DataRequired, Length, Optional
+from wtforms.validators import (DataRequired, Length, Optional, Regexp,
+                                ValidationError)
 
-from .constants import SHORT_SIZE
+from .constants import (MAX_ORIGINAL_SIZE, MAX_USER_SHORT, MIN_ORIGINAL_SIZE,
+                        NOT_UNIQUE_SHORT_ID, SHORT_ID_REGEX)
+from .models import URLMap
+
+ORIGINAL_LINK = 'Добавьте оригинальную длинную ссылку'
+REQUIRED_FIELD = 'Обязательное поле'
+ADD_ID = 'Добавьте идентификатор'
+CREATE_TEXT = 'Создать'
 
 
 class URLMapForm(FlaskForm):
     original_link = URLField(
-        'Добавьте оригинальную длинную ссылку',
-        validators=[DataRequired(message='Обязательное поле')]
+        ORIGINAL_LINK,
+        validators=[
+            DataRequired(message=REQUIRED_FIELD),
+            Length(MIN_ORIGINAL_SIZE, MAX_ORIGINAL_SIZE)
+        ]
     )
     custom_id = StringField(
-        'Добавьте идентификатор',
-        validators=[Length(max=SHORT_SIZE), Optional()]
+        ADD_ID,
+        validators=[
+            Length(max=MAX_USER_SHORT),
+            Regexp(SHORT_ID_REGEX),
+            Optional()
+        ]
     )
-    submit = SubmitField('Создать')
+    submit = SubmitField(CREATE_TEXT)
+
+    def validate_custom_id(self, field):
+        if field.data and URLMap.get_by_short(field.data) is not None:
+            raise ValidationError(NOT_UNIQUE_SHORT_ID)

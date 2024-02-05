@@ -18,20 +18,16 @@
             <div>
               <input type="url" class="form-control form-control-lg py-2 mb-3" id="form-title" name="original_link"
                 placeholder="Длинная ссылка">
-              {% if form.original_link.errors %}
                 {% for error in form.original_link.errors %}
                     <span style="color: red">{{ error }}</span>
                 {% endfor %}
-              {% endif %}
             </div>
             <div>
               <input type="text" class="form-control form-control-lg py-2 mb-3" id="form-link" name="custom_id"
                 placeholder="Ваш вариант короткой ссылки">
-              {% if form.custom_id.errors %}
-                  {% for error in form.custom_id.errors %}
-                    <span style="color: red">{{ error }}</span>
-                  {% endfor %}
-              {% endif %}
+                {% for error in form.custom_id.errors %}
+                  <span style="color: red">{{ error }}</span>
+                {% endfor %}
             </div>
             <input type="submit" class="btn btn-primary" value="Создать">
           </div>
@@ -50,11 +46,9 @@
         <p class="text-center">
             <p class="py-3 mb-3">
               {% with messages = get_flashed_messages() %}
-                {% if messages %}
-                  {% for message in messages %}
+                {% for message in messages %}
                     {{ message }}
-                  {% endfor %}
-                {% endif %}
+                {% endfor %}
               {% endwith %}
             </p>
           {% if url %}
