@@ -3,7 +3,7 @@ from http import HTTPStatus
 from flask import abort, flash, redirect, render_template, url_for
 
 from . import app
-from .constants import NOT_UNIQUE_SHORT_ID
+from .constants import REDIRECT_URL
 from .forms import URLMapForm
 from .models import URLMap
 
@@ -13,20 +13,26 @@ def index_view():
     form = URLMapForm()
     if not form.validate_on_submit():
         return render_template('index.html', form=form)
-    if URLMap.get_by_short(form.custom_id.data) is not None:
-        flash(NOT_UNIQUE_SHORT_ID)
+    try:
+        return render_template(
+            'index.html',
+            form=form,
+            url=url_for(
+                REDIRECT_URL,
+                short=URLMap.create(
+                    form.original_link.data, form.custom_id.data,
+                ).short,
+                _external=True
+            )
+        )
+    except ValueError as error:
+        flash(str(error))
         return render_template('index.html', form=form)
-    url_map = URLMap.create(form.data)
-    return render_template(
-        'index.html',
-        form=form,
-        url=url_for('redirect_view', short=url_map.short, _external=True)
-    )
 
 
 @app.route('/<string:short>')
 def redirect_view(short):
-    urlmap = URLMap.get_by_short(short)
-    if not urlmap:
+    url_map = URLMap.get(short)
+    if url_map is None:
         abort(HTTPStatus.NOT_FOUND)
-    return redirect(urlmap.original)
+    return redirect(url_map.original)

@@ -14,7 +14,7 @@ FIELD_IS_REQUIRED = '"{field}" является обязательным пол�
 
 @app.route('/api/id/<string:short>/', methods=['GET'])
 def get_url(short):
-    url_map = URLMap.get_by_short(short)
+    url_map = URLMap.get(short)
     if url_map is None:
         raise InvalidAPIRequest(ID_NOT_FOUND,
                                 HTTPStatus.NOT_FOUND)
@@ -26,16 +26,17 @@ def add_url():
     data = request.get_json()
     if not data:
         raise InvalidAPIRequest(EMPTY_REQUEST_BODY)
-    required_fields = ('url',)
-    for field in required_fields:
-        if field not in data:
-            raise InvalidAPIRequest(FIELD_IS_REQUIRED.format(field=field))
-    url_map = URLMap.create(data)
-    return jsonify({
-        'url': url_map.original,
-        'short_link': url_for(
-            REDIRECT_URL,
-            short=url_map.short,
-            _external=True
-        )
-    }), HTTPStatus.CREATED
+    if 'url' not in data:
+        raise InvalidAPIRequest(FIELD_IS_REQUIRED.format(field='url'))
+    url = data.get('url')
+    try:
+        return jsonify({
+            'url': url,
+            'short_link': url_for(
+                REDIRECT_URL,
+                short=URLMap.create(url, data.get('custom_id')).short,
+                _external=True
+            )
+        }), HTTPStatus.CREATED
+    except ValueError as error:
+        raise InvalidAPIRequest(str(error))

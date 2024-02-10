@@ -3,9 +3,8 @@ from wtforms import StringField, SubmitField, URLField
 from wtforms.validators import (DataRequired, Length, Optional, Regexp,
                                 ValidationError)
 
-from .constants import (MAX_ORIGINAL_SIZE, MAX_USER_SHORT, MIN_ORIGINAL_SIZE,
-                        NOT_UNIQUE_SHORT_ID, SHORT_ID_REGEX)
-from .models import URLMap
+from .constants import MAX_ORIGINAL_SIZE, MAX_USER_SHORT, SHORT_ID_REGEX
+from .models import NOT_UNIQUE_SHORT, URLMap
 
 ORIGINAL_LINK = 'Добавьте оригинальную длинную ссылку'
 REQUIRED_FIELD = 'Обязательное поле'
@@ -18,7 +17,7 @@ class URLMapForm(FlaskForm):
         ORIGINAL_LINK,
         validators=[
             DataRequired(message=REQUIRED_FIELD),
-            Length(MIN_ORIGINAL_SIZE, MAX_ORIGINAL_SIZE)
+            Length(max=MAX_ORIGINAL_SIZE)
         ]
     )
     custom_id = StringField(
@@ -32,5 +31,5 @@ class URLMapForm(FlaskForm):
     submit = SubmitField(CREATE_TEXT)
 
     def validate_custom_id(self, field):
-        if field.data and URLMap.get_by_short(field.data) is not None:
-            raise ValidationError(NOT_UNIQUE_SHORT_ID)
+        if field.data and URLMap.get(field.data) is not None:
+            raise ValidationError(NOT_UNIQUE_SHORT)
