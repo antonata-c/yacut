@@ -4,6 +4,7 @@ from flask import abort, flash, redirect, render_template, url_for
 
 from . import app
 from .constants import REDIRECT_URL
+from .exceptions import ShortGenerateException
 from .forms import URLMapForm
 from .models import URLMap
 
@@ -25,7 +26,7 @@ def index_view():
                 _external=True
             )
         )
-    except ValueError as error:
+    except (ValueError, ShortGenerateException) as error:
         flash(str(error))
         return render_template('index.html', form=form)
 

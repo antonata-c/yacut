@@ -26,9 +26,10 @@ class URLMap(db.Model):
     def create(original, short, is_validated=False):
         if not short:
             short = URLMap.get_unique_short()
-        elif not is_validated and len(short) > MAX_USER_SHORT:
-            raise ValueError(INCORRECT_SHORT)
+            is_validated = True
         if not is_validated:
+            if len(short) > MAX_USER_SHORT:
+                raise ValueError(INCORRECT_SHORT)
             if len(original) > MAX_ORIGINAL_SIZE:
                 raise ValueError(INCORRECT_ORIGINAL)
             if re.match(SHORT_REGEX, short) is None:

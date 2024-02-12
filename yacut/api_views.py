@@ -5,6 +5,7 @@ from flask import jsonify, request, url_for
 from . import app
 from .constants import REDIRECT_URL
 from .error_handlers import InvalidAPIRequest
+from .exceptions import ShortGenerateException
 from .models import URLMap
 
 ID_NOT_FOUND = 'Указанный id не найден'
@@ -38,5 +39,5 @@ def add_url():
                 _external=True
             )
         }), HTTPStatus.CREATED
-    except ValueError as error:
+    except (ValueError, ShortGenerateException) as error:
         raise InvalidAPIRequest(str(error))
