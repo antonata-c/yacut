@@ -1,7 +1,5 @@
 # Укорачиватель ссылок YaCut
 
-**Ссылка на [документацию](https://github.com/antonata-c/yacut/blob/master/openapi.yml)**
-
 
 ### Используемые технологии:
 - ***Python 3.10***
@@ -45,10 +43,7 @@ pip install -r requirements.txt
 ##### Создайте файл .env, содержащий переменные окружения, пример представлен в файле `.env.example`
 
 ## Развертывание и запуск
-##### Проинициализируйте базу данных, примените миграции:
-```
-flask db init
-```
+##### Примените миграции:
 ```
 flask db migrate
 ```
@@ -58,5 +53,6 @@ flask run
 ```
 #### Проект готов к использованию!
 ***
+### Ссылка на [документацию](https://github.com/antonata-c/yacut/blob/master/openapi.yml)
 ### Автор работы:
 **[Антон Земцов](https://github.com/antonata-c)**

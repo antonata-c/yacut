@@ -3,7 +3,7 @@ from wtforms import StringField, SubmitField, URLField
 from wtforms.validators import (DataRequired, Length, Optional, Regexp,
                                 ValidationError)
 
-from .constants import MAX_ORIGINAL_SIZE, MAX_USER_SHORT, SHORT_ID_REGEX
+from .constants import MAX_ORIGINAL_SIZE, MAX_USER_SHORT, SHORT_REGEX
 from .models import NOT_UNIQUE_SHORT, URLMap
 
 ORIGINAL_LINK = 'Добавьте оригинальную длинную ссылку'
@@ -24,7 +24,7 @@ class URLMapForm(FlaskForm):
         ADD_ID,
         validators=[
             Length(max=MAX_USER_SHORT),
-            Regexp(SHORT_ID_REGEX),
+            Regexp(SHORT_REGEX),
             Optional()
         ]
     )

@@ -1,6 +1,10 @@
 from http import HTTPStatus
 
 
+class ShortGenerateException(Exception):
+    pass
+
+
 class InvalidAPIRequest(Exception):
     status_code = HTTPStatus.BAD_REQUEST
 
